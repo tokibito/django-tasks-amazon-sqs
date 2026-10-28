@@ -1,0 +1,103 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-tasks-amazon-sqs"
+version = "0.1.0"
+description = "An Amazon SQS backend for Django 6.0's built-in task framework"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    {name = "Shinya Okano", email = "tokibito@gmail.com"}
+]
+maintainers = [
+    {name = "Shinya Okano", email = "tokibito@gmail.com"}
+]
+keywords = [
+    "django",
+    "tasks",
+    "sqs",
+    "amazon-sqs",
+    "aws",
+    "async",
+    "queue",
+    "background",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "Django>=6.0",
+    "boto3>=1.28",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-django>=4.5",
+    "ruff>=0.16,<0.17",
+    # Stands in for SQS in tests/test_integration.py, in-process and
+    # without an AWS account.
+    "moto[server]>=5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/tokibito/django-tasks-amazon-sqs"
+Repository = "https://github.com/tokibito/django-tasks-amazon-sqs"
+Issues = "https://github.com/tokibito/django-tasks-amazon-sqs/issues"
+Changelog = "https://github.com/tokibito/django-tasks-amazon-sqs/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["django_tasks_amazon_sqs*"]
+exclude = ["tests*", "examples*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+# Without this a bare `pytest` also collects any Django checkout kept
+# beside the project for reference, which fails before a test can run.
+testpaths = ["tests"]
+pythonpath = ["."]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v"
+
+[tool.ruff]
+# target-version is left unset on purpose: ruff infers it from
+# project.requires-python, so the oldest supported Python is stated once.
+line-length = 88
+# Ruff formats Python code blocks inside Markdown. The documentation
+# snippets are deliberately compact (no PEP 8 blank-line padding around
+# decorated examples), so keep the docs out of scope.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["django_tasks_amazon_sqs"]
