@@ -54,7 +54,7 @@ sequenceDiagram
     alt Success
         Worker->>SQS: DeleteMessage
     else Failure
-        Note over Worker,SQS: Message left in the queue.<br/>Visible again after the visibility timeout;<br/>moved to the dead-letter queue by the redrive policy
+        Note over Worker,SQS: Message left in the queue.<br/>Visible again after the visibility timeout.<br/>The redrive policy moves it to the dead-letter queue
     end
 ```
 
