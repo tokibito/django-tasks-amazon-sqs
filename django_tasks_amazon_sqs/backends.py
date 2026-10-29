@@ -42,7 +42,7 @@ class SQSBackend(BaseTaskBackend):
         AWS_REGION              Region. Detected from AWS_REGION or
                                 AWS_DEFAULT_REGION when unset, and left to
                                 boto3's own configuration otherwise.
-        SQS_ENDPOINT_URL        Endpoint override, for LocalStack or moto.
+        SQS_ENDPOINT_URL        Endpoint override, for moto or LocalStack.
         SQS_QUEUE_URL_TEMPLATE  Queue URL with a {queue_name} placeholder.
                                 Set it to skip the GetQueueUrl call, which
                                 also saves needing sqs:GetQueueUrl.

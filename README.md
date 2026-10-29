@@ -264,7 +264,7 @@ TASKS = {
 | Option | Default | Description |
 |--------|---------|-------------|
 | `AWS_REGION` | Detected | Region. Read from `AWS_REGION` or `AWS_DEFAULT_REGION` when unset, and left to boto3's own configuration (`~/.aws/config`) otherwise |
-| `SQS_ENDPOINT_URL` | `None` | Endpoint override, for [LocalStack](#local-development) or moto |
+| `SQS_ENDPOINT_URL` | `None` | Endpoint override, for [moto](#local-development) or LocalStack |
 | `SQS_QUEUE_URL_TEMPLATE` | `None` | Queue URL with a `{queue_name}` placeholder. Set it to skip the `GetQueueUrl` call, which also saves needing `sqs:GetQueueUrl` |
 | `VISIBILITY_TIMEOUT` | `None` | Seconds a received message stays hidden, 0 to 43200. Leave unset to use the queue's own setting |
 | `WAIT_TIME_SECONDS` | `20` | Long polling wait per receive, 0 to 20 (the SQS limit) |
@@ -361,13 +361,15 @@ LOGGING = {
 
 ## Local Development
 
-Point the backend at [LocalStack](https://localstack.cloud/) or
-[moto](https://docs.getmoto.org/en/latest/docs/server_mode.html) with
-`SQS_ENDPOINT_URL`:
+Point the backend at a local SQS with `SQS_ENDPOINT_URL`. The
+[moto server](https://docs.getmoto.org/en/latest/docs/server_mode.html) is
+what the test suite runs against, and needs no account or token:
 
 ```bash
-docker run -d --rm --name localstack -p 4566:4566 localstack/localstack
-aws --endpoint-url http://localhost:4566 sqs create-queue --queue-name default
+pip install 'moto[server]'
+moto_server -p 5000
+# or: docker run --rm -p 5000:5000 motoserver/moto
+aws --endpoint-url http://localhost:5000 sqs create-queue --queue-name default
 ```
 
 ```python
@@ -377,14 +379,16 @@ TASKS = {
         "QUEUES": [],
         "OPTIONS": {
             "AWS_REGION": "us-east-1",
-            "SQS_ENDPOINT_URL": "http://localhost:4566",
+            "SQS_ENDPOINT_URL": "http://localhost:5000",
         },
     },
 }
 ```
 
-LocalStack accepts any credentials, so `AWS_ACCESS_KEY_ID=test` and
+moto does not check credentials, so `AWS_ACCESS_KEY_ID=test` and
 `AWS_SECRET_ACCESS_KEY=test` in the environment are enough.
+[LocalStack](https://localstack.cloud/) works the same way if you already
+run it: set `SQS_ENDPOINT_URL` to its endpoint instead.
 
 ## FIFO queues
 
